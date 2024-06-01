@@ -207,6 +207,9 @@ pub fn lt() -> String {
                 asm.push_str(&format!("@{}.{}\n", "test", index));
                 asm.push_str("D=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
+            "saveCaller" => { //CUSTOM SEGMENT: just for saving LCL, ARG, THIS, THAT
+                asm.push_str(&format!("@{}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n", index));
+            }
             _ => {
                 println!("Invalid segment");
             }
@@ -251,6 +254,45 @@ pub fn lt() -> String {
                 println!("Invalid segment");
             }
         }
+        asm
+    }
+
+
+    pub fn label(label: &str) -> String {
+        format!("({})\n", label)
+    }
+
+    pub fn goto(label: &str) -> String {
+        format!("@{}\n0;JMP\n", label)
+    }
+
+    pub fn if_goto(label: &str) -> String {
+        format!(
+            "@SP\n\
+            AM=M-1\n\
+            D=M\n\
+            @{}\n\
+            D;JNE\n",
+            label
+        )
+    }
+
+    pub fn call(function_name: &str,n_args:i16) -> String {
+        let ret_addr_label = unique_label(&format!("{}$retAddr", function_name));
+        let mut asm = String::new();
+        asm.push_str(&push("constant", &ret_addr_label));
+        asm.push_str(&push("saveCaller", "LCL"));
+        asm.push_str(&push("saveCaller", "ARG"));
+        asm.push_str(&push("saveCaller", "THIS"));
+        asm.push_str(&push("saveCaller", "THAT"));
+        //ARG = SP - nArgs - 5
+        asm.push_str(&format!("@SP\nD=M\n@5\nD=D-A\n@{}\nD=D-A\n@ARG\nM=D\n", n_args));
+        //LCL = SP
+        asm.push_str("@SP\nD=M\n@LCL\nM=D\n");
+        //goto functionName
+        asm.push_str(&goto(function_name));
+        //return address label
+        asm.push_str(&label(&ret_addr_label));
         asm
     }
 
