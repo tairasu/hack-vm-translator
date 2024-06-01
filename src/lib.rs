@@ -296,6 +296,17 @@ pub fn lt() -> String {
         asm
     }
 
+    pub fn function(function_name: &str, n_locals: i16) -> String {
+        let mut asm = String::new();
+        asm.push_str(&label(function_name));
+        for _ in 0..n_locals {
+            asm.push_str(&push("constant", "0"));
+        }
+        asm
+    }
+
+    
+
     //parse line
     pub fn parse_line(line: &str) -> String {
         let mut split_line = line.split_whitespace();
