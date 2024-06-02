@@ -47,11 +47,11 @@ pub mod load {
 //instructions
 pub mod instructions {
     pub fn add() -> &'static str{
-        "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M+D\n@SP\nM=M+1\n"
+        "//add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M+D\n@SP\nM=M+1\n"
     }
     
     pub fn sub() -> &'static str{
-        "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n"
+        "//sub\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n"
     }
 
     static mut LABEL_COUNT: usize = 0;
@@ -65,26 +65,26 @@ fn unique_label(prefix: &str) -> String {
 }
 
 pub fn neg() -> &'static str {
-    "@SP\nM=M-1\nA=M\nM=-M\n@SP\nM=M+1\n"
+    "//neg\n@SP\nM=M-1\nA=M\nM=-M\n@SP\nM=M+1\n"
 }
 
 pub fn not() -> &'static str{
-    "@SP\nM=M-1\nA=M\nM=!M\n@SP\nM=M+1\n"
+    "//not\n@SP\nM=M-1\nA=M\nM=!M\n@SP\nM=M+1\n"
 }
 
 pub fn and() -> &'static str{
-    "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n"
+    "//and\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n"
 }
 
 pub fn or() -> &'static str{
-    "@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n"
+    "//or\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n"
 }
 
 pub fn eq() -> String {
     let label_true = unique_label("EQ_TRUE");
     let label_end = unique_label("EQ_END");
     format!(
-        "@SP\n\
+        "//eq\n@SP\n\
         M=M-1\n\
         A=M\n\
         D=M\n\
@@ -114,7 +114,7 @@ pub fn gt() -> String {
     let label_true = unique_label("GT_TRUE");
     let label_end = unique_label("GT_END");
     format!(
-        "@SP\n\
+        "//gt\n@SP\n\
         M=M-1\n\
         A=M\n\
         D=M\n\
@@ -144,7 +144,7 @@ pub fn lt() -> String {
     let label_true = unique_label("LT_TRUE");
     let label_end = unique_label("LT_END");
     format!(
-        "@SP\n\
+        "//lt\n@SP\n\
         M=M-1\n\
         A=M\n\
         D=M\n\
@@ -176,39 +176,39 @@ pub fn lt() -> String {
         
         match segment {
             "constant" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push constant {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "local" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push local {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@LCL\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "argument" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push argument {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@ARG\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "this" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push this {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@THIS\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "that" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push that {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@THAT\nA=M+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "temp" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push temp {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@5\nA=A+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "pointer" => {
-                asm.push_str(&format!("@{}\n", index));
+                asm.push_str(&format!("//push pointer {}\n@{}\n", index, index));
                 asm.push_str("D=A\n@3\nA=A+D\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "static" => {
-                asm.push_str(&format!("@{}.{}\n", "test", index));
+                asm.push_str(&format!("//push static\n@{}.{}\n", "test", index));
                 asm.push_str("D=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
             }
             "saveCaller" => { //CUSTOM SEGMENT: just for saving LCL, ARG, THIS, THAT
-                asm.push_str(&format!("@{}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n", index));
+                asm.push_str(&format!("//push saveCaller {}\n@{}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n", index, index));
             }
             _ => {
                 println!("Invalid segment");
@@ -259,20 +259,22 @@ pub fn lt() -> String {
 
 
     pub fn label(label: &str) -> String {
-        format!("({})\n", label)
+        format!("//label {}\n({})\n", label, label)
     }
 
     pub fn goto(label: &str) -> String {
-        format!("@{}\n0;JMP\n", label)
+        format!("//goto {}\n@{}\n0;JMP\n", label, label)
     }
 
     pub fn if_goto(label: &str) -> String {
         format!(
-            "@SP\n\
+            "//if_goto {}\n
+            @SP\n\
             AM=M-1\n\
             D=M\n\
             @{}\n\
             D;JNE\n",
+            label,
             label
         )
     }
@@ -280,6 +282,7 @@ pub fn lt() -> String {
     pub fn call(function_name: &str,n_args:i16) -> String {
         let ret_addr_label = unique_label(&format!("{}$retAddr", function_name));
         let mut asm = String::new();
+        asm.push_str(&format!("//call {} {}\n", function_name, n_args));
         asm.push_str(&push("constant", &ret_addr_label));
         asm.push_str(&push("saveCaller", "LCL"));
         asm.push_str(&push("saveCaller", "ARG"));
@@ -298,6 +301,7 @@ pub fn lt() -> String {
 
     pub fn function(function_name: &str, n_locals: i16) -> String {
         let mut asm = String::new();
+        asm.push_str(&format!("//function {} {}\n", function_name, n_locals));
         asm.push_str(&label(function_name));
         for _ in 0..n_locals {
             asm.push_str(&push("constant", "0"));
@@ -305,7 +309,30 @@ pub fn lt() -> String {
         asm
     }
 
-    
+    pub fn return_() -> String {
+        let mut asm = String::new();  
+        asm.push_str("// return\n");    
+        // FRAME = LCL
+        asm.push_str("@LCL\nD=M\n@R13\nM=D\n"); 
+        // RET = *(FRAME-5)
+        asm.push_str("@5\nA=D-A\nD=M\n@R14\nM=D\n");    
+        // *ARG = pop()
+        asm.push_str("@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D\n");    
+        // SP = ARG + 1
+        asm.push_str("@ARG\nD=M+1\n@SP\nM=D\n");    
+        // THAT = *(FRAME-1)
+        asm.push_str("@R13\nAM=M-1\nD=M\n@THAT\nM=D\n");    
+        // THIS = *(FRAME-2)
+        asm.push_str("@R13\nAM=M-1\nD=M\n@THIS\nM=D\n");
+        // ARG = *(FRAME-3)
+        asm.push_str("@R13\nAM=M-1\nD=M\n@ARG\nM=D\n");
+        // LCL = *(FRAME-4)
+        asm.push_str("@R13\nAM=M-1\nD=M\n@LCL\nM=D\n");
+        // goto RET
+        asm.push_str("@R14\nA=M\n0;JMP\n");
+        asm
+    }
+
 
     //parse line
     pub fn parse_line(line: &str) -> String {
@@ -349,6 +376,30 @@ pub fn lt() -> String {
             }
             "lt" => {
                 parsed.push_str(lt().as_str());
+            }
+            "label" => {
+                parsed.push_str(label(split_line.next().unwrap()).as_str());
+            }
+            "goto" => {
+                let label = split_line.next().unwrap();
+                parsed.push_str(goto(label).as_str());
+            }
+            "if-goto" => {
+                let label = split_line.next().unwrap();
+                parsed.push_str(if_goto(label).as_str());
+            }
+            "call" => {
+                let function_name = split_line.next().unwrap();
+                let n_args = split_line.next().unwrap().parse::<i16>().unwrap();
+                parsed.push_str(call(function_name, n_args).as_str());
+            }
+            "function" => {
+                let function_name = split_line.next().unwrap();
+                let n_locals = split_line.next().unwrap().parse::<i16>().unwrap();
+                parsed.push_str(function(function_name, n_locals).as_str());
+            }
+            "return" => {
+                parsed.push_str(return_().as_str());
             }
             _ => {
                 println!("Invalid command");
