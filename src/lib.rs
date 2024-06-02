@@ -349,12 +349,12 @@ pub fn lt() -> String {
             "push" => {
                 let segment = split_line.next().unwrap();
                 let index = split_line.next().unwrap();
-                parsed.push_str(push(segment, index).as_str());
+                parsed.push_str(&push(segment, index));
             }
             "pop" => {
                 let segment = split_line.next().unwrap();
                 let index = split_line.next().unwrap();
-                parsed.push_str(pop(segment, index).as_str());
+                parsed.push_str(&pop(segment, index));
             }
             "neg" => {
                 parsed.push_str(neg());
@@ -369,37 +369,37 @@ pub fn lt() -> String {
                 parsed.push_str(or());
             }
             "eq" => {
-                parsed.push_str(eq().as_str());
+                parsed.push_str(&eq());
             }
             "gt" => {
-                parsed.push_str(gt().as_str());
+                parsed.push_str(&gt());
             }
             "lt" => {
-                parsed.push_str(lt().as_str());
+                parsed.push_str(&lt());
             }
             "label" => {
-                parsed.push_str(label(split_line.next().unwrap()).as_str());
+                parsed.push_str(&label(split_line.next().unwrap()));
             }
             "goto" => {
                 let label = split_line.next().unwrap();
-                parsed.push_str(goto(label).as_str());
+                parsed.push_str(&goto(label));
             }
             "if-goto" => {
                 let label = split_line.next().unwrap();
-                parsed.push_str(if_goto(label).as_str());
+                parsed.push_str(&if_goto(label));
             }
             "call" => {
                 let function_name = split_line.next().unwrap();
                 let n_args = split_line.next().unwrap().parse::<i16>().unwrap();
-                parsed.push_str(call(function_name, n_args).as_str());
+                parsed.push_str(&call(function_name, n_args));
             }
             "function" => {
                 let function_name = split_line.next().unwrap();
                 let n_locals = split_line.next().unwrap().parse::<i16>().unwrap();
-                parsed.push_str(function(function_name, n_locals).as_str());
+                parsed.push_str(&function(function_name, n_locals));
             }
             "return" => {
-                parsed.push_str(return_().as_str());
+                parsed.push_str(&return_());
             }
             _ => {
                 println!("Invalid command");
@@ -412,7 +412,7 @@ pub fn lt() -> String {
     pub fn parse_file(file_content: String) -> String {
         let mut parsed = String::new();
         for line in file_content.lines() {
-            parsed.push_str(parse_line(line).as_str());
+            parsed.push_str(&parse_line(line));
             parsed.push_str("\n");
         }
         parsed.pop();
