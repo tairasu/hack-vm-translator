@@ -310,26 +310,24 @@ pub fn lt() -> String {
     }
 
     pub fn return_() -> String {
-        let mut asm = String::new();  
-        asm.push_str("// return\n");    
-        // FRAME = LCL
-        asm.push_str("@LCL\nD=M\n@R13\nM=D\n"); 
-        // RET = *(FRAME-5)
-        asm.push_str("@5\nA=D-A\nD=M\n@R14\nM=D\n");    
-        // *ARG = pop()
-        asm.push_str("@SP\nM=M-1\nA=M\nD=M\n@ARG\nA=M\nM=D\n");    
-        // SP = ARG + 1
-        asm.push_str("@ARG\nD=M+1\n@SP\nM=D\n");    
-        // THAT = *(FRAME-1)
-        asm.push_str("@R13\nAM=M-1\nD=M\n@THAT\nM=D\n");    
-        // THIS = *(FRAME-2)
-        asm.push_str("@R13\nAM=M-1\nD=M\n@THIS\nM=D\n");
-        // ARG = *(FRAME-3)
-        asm.push_str("@R13\nAM=M-1\nD=M\n@ARG\nM=D\n");
-        // LCL = *(FRAME-4)
-        asm.push_str("@R13\nAM=M-1\nD=M\n@LCL\nM=D\n");
-        // goto RET
-        asm.push_str("@R14\nA=M\n0;JMP\n");
+        let mut asm = String::new();
+        asm.push_str("//return\n");
+        //FRAME = LCL
+        asm.push_str("@LCL\nD=M\n@R15\nM=D\n");
+        //*ARG = pop()
+        asm.push_str(&pop("argument", "0"));
+        //SP = ARG + 1
+        asm.push_str("@ARG\nD=M+1\n@SP\nM=D\n");
+        //THAT = *(FRAME - 1)
+        asm.push_str("@R15\nAM=M-1\nD=M\n@THAT\nM=D\n");
+        //THIS = *(FRAME - 2)
+        asm.push_str("@R15\nAM=M-1\nD=M\n@THIS\nM=D\n");
+        //ARG = *(FRAME - 3)
+        asm.push_str("@R15\nAM=M-1\nD=M\n@ARG\nM=D\n");
+        //LCL = *(FRAME - 4)
+        asm.push_str("@R15\nAM=M-1\nD=M\n@LCL\nM=D\n");
+        //retAddr = *(FRAME - 5)
+        asm.push_str("@R15\nA=M-1\n0;JMP");
         asm
     }
 
